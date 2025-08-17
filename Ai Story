@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Choose your life — AI Adventure</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <!-- Import map (if you later add libraries) -->
+  <script type="importmap">
+  {
+    "imports": {}
+  }
+  </script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="header">
+      <div class="title">
+        <h1>Choose your life</h1>
+        <p class="subtitle">An AI-driven, customizable text adventure — Created by Max Binkenturd</p>
+      </div>
+      <div class="meta">
+        <button id="new-adventure-btn" class="btn">New Adventure</button>
+        <!-- Inventory button -->
+        <!-- inventory removed -->
+        <!-- Theme selector -->
+        <label for="theme-select" class="theme-label" style="margin-left:12px;">
+          Theme
+          <select id="theme-select" class="btn" aria-label="Select theme" style="margin-left:6px;padding:6px 8px;border-radius:8px;">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="sepia">Sepia</option>
+            <option value="solarized">Solarized</option>
+            <option value="midnight">Midnight</option>
+            <option value="high-contrast">High Contrast</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="left">
+        <form id="setup-form" class="card setup-card">
+          <h2>Adventure Setup</h2>
+
+          <!-- Title moved to sit immediately above the Opening textarea for inline editing -->
+          <label>
+            Setting / Opening (highly customizable)
+            <div style="margin-top:8px;margin-bottom:6px;">
+              <input id="adv-title" placeholder="Adventure title — e.g. The Cursed City" />
+            </div>
+            <textarea id="adv-opening" rows="4" placeholder="Describe the opening scene, important NPCs, and atmosphere..."></textarea>
+          </label>
+
+          <label class="row">
+            <div>
+              Difficulty (optional)
+              <select id="adv-difficulty">
+                <option value="">(none)</option>
+                <option>Easy</option>
+                <option>Normal</option>
+                <option>Hard</option>
+                <option>Deadly</option>
+              </select>
+            </div>
+            <div>
+              Tone
+              <select id="adv-tone">
+                <option>Neutral</option>
+                <option>Dark</option>
+                <option>Humorous</option>
+                <option>Mystical</option>
+              </select>
+            </div>
+          </label>
+
+          <label>
+            Starting Instructions for the AI (optional)
+            <textarea id="adv-instructions" rows="3" placeholder="How should the AI behave? E.g., 'Focus on dialogue and moral choices, keep descriptions short'"></textarea>
+          </label>
+
+          <div class="actions">
+            <button id="start-btn" class="btn primary">Start Adventure</button>
+            <button id="save-setup" class="btn">Save Setup</button>
+          </div>
+        </form>
+
+        <section class="card console-card">
+          <h2>Adventure Console</h2>
+          <div class="console-toolbar">
+            <button id="console-fullscreen-btn" class="btn" title="Toggle console fullscreen">⤢ Console Fullscreen</button>
+          </div>
+          <div id="log" class="log" aria-live="polite"></div>
+
+          <form id="action-form" class="action-row">
+            <input id="action-input" placeholder="Describe your next action..." autocomplete="off" />
+            <input id="roll-input" class="roll" placeholder="d20" inputmode="numeric" />
+            <button class="btn primary" id="act-btn">Act</button>
+          </form>
+
+          <!-- Intuitive Actions: three AI-suggested choices -->
+          <div id="intuitive-actions" class="intuitive-actions" aria-live="polite" aria-label="Suggested actions">
+            <button class="intuitive-btn" data-index="0" aria-label="Suggested action 1">…</button>
+            <button class="intuitive-btn" data-index="1" aria-label="Suggested action 2">…</button>
+            <button class="intuitive-btn" data-index="2" aria-label="Suggested action 3">…</button>
+          </div>
+
+          <div class="controls">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <button id="save-adventure-btn" class="btn">Save Adventure</button>
+              <button id="load-adventure-btn" class="btn">Load Saved</button>
+              <button id="revert-btn" class="btn">Revert to Start</button>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="right">
+        <section class="card saved-card">
+          <h3>Saved Adventures</h3>
+          <ul id="saved-list" class="saved-list"></ul>
+        </section>
+
+        <section class="card settings-card">
+          <h3>Session</h3>
+          <div class="session-info" id="session-info">Loading user…</div>
+
+          <div class="image-settings">
+            <label class="small">
+              <input type="checkbox" id="image-enable" checked />
+              Generate images for story events
+            </label>
+            <label>
+              Image quality
+              <select id="image-quality">
+                <option value="low">Low (512x512)</option>
+                <option value="medium" selected>Medium (1024x768)</option>
+                <option value="high">High (2048x1536)</option>
+              </select>
+            </label>
+
+            <label>
+              Aspect ratio
+              <select id="image-aspect">
+                <option value="4:3" selected>4:3</option>
+                <option value="16:9">16:9</option>
+                <option value="1:1">1:1</option>
+                <option value="9:16">9:16 (portrait)</option>
+              </select>
+            </label>
+
+            <label>
+              Seed (optional)
+              <input id="image-seed" placeholder="numeric seed for consistent images" />
+            </label>
+
+            <label class="small">
+              <input type="checkbox" id="image-transparent" />
+              Prefer transparent background (if supported)
+            </label>
+          </div>
+          <button id="export-btn" class="btn">Export Log</button>
+        </section>
+
+        <section class="card memory-card" id="memory-library">
+          <h3>Memory Library</h3>
+          <div class="memory-actions" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <button id="new-card-btn" class="btn">New Card</button>
+            <select id="memory-filter" class="btn" aria-label="Filter memory">
+              <option value="all">All</option>
+              <option value="character">Characters</option>
+              <option value="place">Places</option>
+              <option value="lore">Lore</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+          <div id="memory-list" class="memory-list" aria-live="polite"></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <small>Choose your life — lightweight, elegant text adventures powered by AI. <em>for my beautiful Stephanie</em></small>
+    </footer>
+
+    <!-- add inventory panel near end of body inside #app -->
+    <!-- inventory removed -->
+
+    <!-- load the module entrypoint -->
+    <script type="module" src="app.js"></script>
+  </div>
+</body>
+</html>
